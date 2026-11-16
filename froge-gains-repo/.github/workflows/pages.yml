@@ -3,7 +3,7 @@ name: Deploy web pages
 on:
   push:
     branches: [main]
-    paths: ["web/**"]
+    paths: ["froge-gains-repo/web"]
   workflow_dispatch:
 permissions:
   contents: read
