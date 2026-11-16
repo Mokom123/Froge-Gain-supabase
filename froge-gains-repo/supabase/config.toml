@@ -1,0 +1,16 @@
+# Settings the Supabase CLI reads when deploying. Functions marked false are called by Telegram,
+# Google, X or the database itself, so they cannot carry a login token (they check their own secrets).
+project_id = "froge-gains"
+
+[functions.send-push]
+verify_jwt = false
+[functions.status-cleanup]
+verify_jwt = false
+[functions.chat-cleanup]
+verify_jwt = false
+[functions.telegram-webhook]
+verify_jwt = false
+[functions.x-callback]
+verify_jwt = false
+[functions.yt-callback]
+verify_jwt = false

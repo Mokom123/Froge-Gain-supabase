@@ -1,0 +1,56 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset password - Froge Gains</title><style>
+:root{--bg:#000;--fg:#fff;--dim:#b8b8b8;--g:#8DFF6B;--card:#111;--line:#262626}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 60px}
+.center{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.box{max-width:430px;width:100%}
+.frog{width:96px;height:96px;margin:0 auto 20px;border-radius:50%;border:2px solid var(--g);box-shadow:0 0 36px #8dff6b66;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--card)}
+h1{font-size:26px;margin:0 0 10px}h2{font-size:19px;margin:30px 0 6px;color:var(--g)}p,li{color:var(--dim)}
+a{color:var(--g)}a.btn,button{display:inline-block;margin-top:16px;padding:14px 28px;border-radius:30px;background:var(--g);color:#000;font-weight:800;text-decoration:none;border:0;font-size:16px;cursor:pointer}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:#fff;font-size:16px;margin-top:10px}
+small,.note{display:block;margin-top:16px;color:#777;font-size:13px}.err{color:#ff6b6b}.ok{color:var(--g)}
+nav{text-align:center;padding:14px;font-size:14px}nav a{margin:0 10px}
+</style></head><body>
+<div class="center"><div class="box"><div class="frog">🔑</div>
+<h1>Choose a new password</h1>
+<p id="intro">Open this page from the reset link in your email, then type your new password.</p>
+<div id="form" style="display:none">
+<input id="pw" type="password" placeholder="New password (at least 8 characters)" autocomplete="new-password">
+<input id="pw2" type="password" placeholder="Repeat new password" autocomplete="new-password">
+<button id="go">Save new password</button></div>
+<div id="ask">
+<input id="email" type="email" placeholder="Or enter your email to get a reset link" autocomplete="email">
+<button id="send">Send reset link</button></div>
+<p id="msg" class="note"></p>
+<small><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a></small></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+var msg = document.getElementById("msg");
+function say(t, c) { msg.className = "note " + (c || ""); msg.textContent = t; }
+if (FROGE.SUPABASE_URL.indexOf("YOUR_") === 0) { say("This page is not set up yet (config.js).", "err"); }
+else {
+  var sb = supabase.createClient(FROGE.SUPABASE_URL, FROGE.SUPABASE_ANON_KEY);
+  sb.auth.onAuthStateChange(function (ev) {
+    if (ev === "PASSWORD_RECOVERY") {
+      document.getElementById("form").style.display = "block";
+      document.getElementById("ask").style.display = "none";
+      document.getElementById("intro").textContent = "Type your new password.";
+    }
+  });
+  document.getElementById("send").onclick = async function () {
+    var email = document.getElementById("email").value.trim();
+    if (!email) return say("Enter your email first.", "err");
+    var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    if (r.error) say(r.error.message, "err"); else say("If that email has an account, a reset link is on its way.", "ok");
+  };
+  document.getElementById("go").onclick = async function () {
+    var a = document.getElementById("pw").value, b = document.getElementById("pw2").value;
+    if (a.length < 8) return say("Use at least 8 characters.", "err");
+    if (a !== b) return say("The two passwords do not match.", "err");
+    var r = await sb.auth.updateUser({ password: a });
+    if (r.error) say(r.error.message, "err");
+    else { say("Password changed. Go back to the app and log in.", "ok"); document.getElementById("form").style.display = "none"; }
+  };
+}
+</script></body></html>

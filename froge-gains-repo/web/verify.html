@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verify your email - Froge Gains</title><style>
+:root{--bg:#000;--fg:#fff;--dim:#b8b8b8;--g:#8DFF6B;--card:#111;--line:#262626}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 60px}
+.center{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.box{max-width:430px;width:100%}
+.frog{width:96px;height:96px;margin:0 auto 20px;border-radius:50%;border:2px solid var(--g);box-shadow:0 0 36px #8dff6b66;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--card)}
+h1{font-size:26px;margin:0 0 10px}h2{font-size:19px;margin:30px 0 6px;color:var(--g)}p,li{color:var(--dim)}
+a{color:var(--g)}a.btn,button{display:inline-block;margin-top:16px;padding:14px 28px;border-radius:30px;background:var(--g);color:#000;font-weight:800;text-decoration:none;border:0;font-size:16px;cursor:pointer}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:#fff;font-size:16px;margin-top:10px}
+small,.note{display:block;margin-top:16px;color:#777;font-size:13px}.err{color:#ff6b6b}.ok{color:var(--g)}
+nav{text-align:center;padding:14px;font-size:14px}nav a{margin:0 10px}
+</style></head><body>
+<div class="center"><div class="box"><div class="frog">📧</div>
+<h1>Verify your email</h1>
+<p>We sent a confirmation link to your email. Open it to activate your account. Check your spam folder too.</p>
+<p>Did not get it? Enter your email and we will send it again.</p>
+<input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+<button id="go">Resend confirmation email</button>
+<p id="msg" class="note"></p>
+<small><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a></small></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+var q = new URLSearchParams(location.search); if (q.get("email")) document.getElementById("email").value = q.get("email");
+var msg = document.getElementById("msg");
+document.getElementById("go").onclick = async function () {
+  var email = document.getElementById("email").value.trim();
+  if (!email) { msg.className = "note err"; msg.textContent = "Enter your email first."; return; }
+  if (FROGE.SUPABASE_URL.indexOf("YOUR_") === 0) { msg.className = "note err"; msg.textContent = "This page is not set up yet (config.js)."; return; }
+  var sb = supabase.createClient(FROGE.SUPABASE_URL, FROGE.SUPABASE_ANON_KEY);
+  msg.className = "note"; msg.textContent = "Sending...";
+  var r = await sb.auth.resend({ type: "signup", email: email, options: { emailRedirectTo: location.origin + location.pathname.replace("verify.html", "confirmed.html") } });
+  if (r.error) { msg.className = "note err"; msg.textContent = r.error.message; }
+  else { msg.className = "note ok"; msg.textContent = "Sent. Check your inbox (and spam)."; }
+};
+</script></body></html>
