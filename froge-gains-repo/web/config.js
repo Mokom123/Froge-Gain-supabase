@@ -4,5 +4,5 @@ window.FROGE = {
   SUPABASE_URL: "https://uxhpywajfmyxprgedtbp.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_dt0tUE77xN-0rZMR1EeXoA_5DStfjtj",
   APP_LINK: "froge://login-callback/",
-  CONTACT_EMAIL: "princeforcefroge@gmail.com"
+  CONTACT_EMAIL: "frogegain@gmail.com"
 };
